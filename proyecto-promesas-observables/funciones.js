@@ -37,11 +37,11 @@ module.exports.leerArchivo = (nombreArchivo) => {
     })
 }
 
-module.exports.leerYEscribir = (comic, nombreArchivo) => {
+module.exports.leerYEscribir = (comic, nombreArchivo) => {        
     return new Promise((resolve, reject) => {
         fs.readFile(nombreArchivo, 'utf-8', (err, misComics) => {
-            if (err) {
-                fs.writeFile(nombreArchivo, comic, (err) => {
+            if (err) {                
+                fs.writeFile(nombreArchivo, comic, (err) => {                    
                     if (err) {
                         reject({
                             mesaje: 'error al crear'
@@ -53,8 +53,8 @@ module.exports.leerYEscribir = (comic, nombreArchivo) => {
                         });
                     }
                 })
-            } else {
-                fs.writeFile(nombreArchivo, misComics + '-' + comic, (err) => {
+            } else {                                
+                fs.writeFile(nombreArchivo, misComics.concat('-',comic), (err) => {                    
                     if (err) {
                         reject({
                             mesaje: 'error al crear'
