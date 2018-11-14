@@ -1,0 +1,1 @@
+{"Nombre Comic":"eee","Fecha Publicacion":"eee","Genero":"eee"}
