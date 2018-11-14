@@ -4,6 +4,8 @@ const fs = require('fs');
 const rxjs = require('rxjs');
 const opcionesMenu = require('./opciones-menu')
 const funciones = require('./funciones')
+const leerArchivo$ = rxjs.from(funciones.leerArchivo("DC"))
+const leerArchivoMarvel$ = rxjs.from(funciones.leerArchivo("Marvel"))
 let misComics = []
 
 inquirer.prompt([opcionesMenu.menuComicPrincipal])
@@ -16,41 +18,66 @@ inquirer.prompt([opcionesMenu.menuComicPrincipal])
                             case 'Ingresar Comic':
                                 inquirer.prompt(opcionesMenu.atributosComic)
                                     .then(comic => {
-                                        // const leerArchivo$ = rxjs.from(funciones.leerArchivo())
-                                        // leerArchivo$.subscribe(respuesta => {
-                                        //     console.log(respuesta)
-                                        // if (respuesta.existe) {
-                                        const escribirArchivo$ = rxjs.from(funciones.escribirArchivo(JSON.stringify(comic), "DC.txt"))
-                                        escribirArchivo$.subscribe(respuesta => {
-                                            console.log(respuesta)
-                                        })
-                                        // }
-                                        // else {
-                                        //     misComics.push(respuesta)
-                                        //     const escribirArchivo$ = rxjs.from(funciones.escribirArchivo(misComics))
-                                        //     escribirArchivo$.subscribe(respuesta => {
-                                        //         console.log(respuesta)
-                                        //     })
-                                        // }
-                                        // })
+                                        const leerYEscribirArchivo$ = rxjs.from(funciones.leerYEscribir(JSON.stringify(comic), "DC"))
+                                        leerYEscribirArchivo$
+                                            .subscribe(respuesta => {
+                                                console.log(respuesta)
+                                            })
                                     })
                                 break;
                             case 'Listar Comic':
-                                const leerArchivo$ = rxjs.from(funciones.leerArchivo("DC.txt"))
                                 leerArchivo$.subscribe(respuesta => {
-                                    const nombreComic = JSON.parse(respuesta.contenido)["Nombre Comic"]
-                                    const fechaPublicacion = JSON.parse(respuesta.contenido)["Fecha Publicacion"]
-                                    const genero = JSON.parse(respuesta.contenido)["Genero"]
-                                    console.log(`Nombre Comic: ${nombreComic}, Genero Comic: ${genero}, Fecha de publicacion: ${fechaPublicacion}`)
+                                    misComics = respuesta.contenido.split('-')
+                                    misComics.forEach(value => {
+                                        const nombreComic = JSON.parse(value)["Nombre Comic"]
+                                        const fechaPublicacion = JSON.parse(value)["Fecha Publicacion"]
+                                        const genero = JSON.parse(value)["Genero"]
+                                        console.log(`Nombre Comic: ${nombreComic}, Genero Comic: ${genero}, Fecha de publicacion: ${fechaPublicacion}`)
+                                    })
                                 })
                                 break;
                             case 'Modificar Comic':
+                                inquirer.prompt(opcionesMenu.buscarComicNombre)
+                                    .then(comic => {
+                                        console.log(comic)
+                                        leerArchivo$.subscribe(respuesta => {
+                                            misComics = respuesta.contenido.split('-');
+                                            const comics = misComics.map(miComic => {
+                                                return JSON.parse(miComic)
+                                            })
+                                            console.log(comics)
+                                        })
+                                    })
                                 break;
                             case 'Eliminar Comic':
+                                inquirer.prompt(opcionesMenu.buscarComicNombre)
+                                    .then(comic => {
+                                        console.log(comic)
+                                        leerArchivo$.subscribe(respuesta => {
+                                            misComics = respuesta.contenido.split('-');
+                                            const comics = misComics.map(miComic => {
+                                                return JSON.parse(miComic)
+                                            })
+                                            comics.forEach((miComic, index) => {
+                                                const existeComic = miComic["Nombre Comic"] == comic["Nombre Comic"]
+                                                if (existeComic) {
+                                                    const comicEliminado = comics.splice(index, 1)
+                                                    return comicEliminado
+                                                }
+                                            })
+                                            comics.forEach(value => {
+                                                const escribirArchivo$ = rxjs.from(funciones.escribirArchivo(JSON.stringify(value), "DC"))
+                                                escribirArchivo$.subscribe(respuesta => {
+                                                    console.log(respuesta)
+                                                })
+                                            })
+                                        })
+                                    })
                                 break;
                         }
                     })
                 break;
+
             case 'Marvel':
                 inquirer.prompt([opcionesMenu.menuComicSecundario])
                     .then(opcion => {
@@ -58,37 +85,61 @@ inquirer.prompt([opcionesMenu.menuComicPrincipal])
                             case 'Ingresar Comic':
                                 inquirer.prompt(opcionesMenu.atributosComic)
                                     .then(comic => {
-                                        // const leerArchivo$ = rxjs.from(funciones.leerArchivo())
-                                        // leerArchivo$.subscribe(respuesta => {
-                                        //     console.log(respuesta)
-                                        // if (respuesta.existe) {
-                                        const escribirArchivo$ = rxjs.from(funciones.escribirArchivo(JSON.stringify(comic), "Marvel.txt"))
-                                        escribirArchivo$.subscribe(respuesta => {
-                                            console.log(respuesta)
-                                        })
-                                        //}
-                                        // else {
-                                        //     //misComics.push(respuesta)
-                                        //     const escribirArchivo$ = rxjs.from(funciones.escribirArchivo(misComics))
-                                        //     escribirArchivo$.subscribe(respuesta => {
-                                        //         console.log(respuesta)
-                                        //     })
-                                        // }
-                                        // })
+                                        const leerYEscribirArchivo$ = rxjs.from(funciones.leerYEscribir(JSON.stringify(comic), "Marvel"))
+                                        leerYEscribirArchivo$
+                                            .subscribe(respuesta => {
+                                                console.log(respuesta)
+                                            })
                                     })
                                 break;
                             case 'Listar Comic':
-                                const leerArchivo$ = rxjs.from(funciones.leerArchivo("Marvel.txt"))
-                                leerArchivo$.subscribe(respuesta => {
-                                    const nombreComic = JSON.parse(respuesta.contenido)["Nombre Comic"]
-                                    const fechaPublicacion = JSON.parse(respuesta.contenido)["Fecha Publicacion"]
-                                    const genero = JSON.parse(respuesta.contenido)["Genero"]
-                                    console.log(`Nombre Comic: ${nombreComic}, Genero Comic: ${genero}, Fecha de publicacion: ${fechaPublicacion}`)
+                            leerArchivoMarvel$.subscribe(respuesta => {
+                                    misComics = respuesta.contenido.split('-')
+                                    misComics.forEach(value => {
+                                        const nombreComic = JSON.parse(value)["Nombre Comic"]
+                                        const fechaPublicacion = JSON.parse(value)["Fecha Publicacion"]
+                                        const genero = JSON.parse(value)["Genero"]
+                                        console.log(`Nombre Comic: ${nombreComic}, Genero Comic: ${genero}, Fecha de publicacion: ${fechaPublicacion}`)
+                                    })
                                 })
                                 break;
                             case 'Modificar Comic':
-                                break;
+                                inquirer.prompt(opcionesMenu.buscarComicNombre)
+                                    .then(comic => {
+                                        console.log(comic)
+                                        leerArchivoMarvel$.subscribe(respuesta => {
+                                            misComics = respuesta.contenido.split('-');
+                                            const comics = misComics.map(miComic => {
+                                                return JSON.parse(miComic)
+                                            })
+                                            console.log(comics)
+                                        })
+                                    })
+                                break;                                
                             case 'Eliminar Comic':
+                                inquirer.prompt(opcionesMenu.buscarComicNombre)
+                                    .then(comic => {
+                                        console.log(comic)
+                                        leerArchivoMarvel$.subscribe(respuesta => {
+                                            misComics = respuesta.contenido.split('-');
+                                            const comics = misComics.map(miComic => {
+                                                return JSON.parse(miComic)
+                                            })
+                                            comics.forEach((miComic, index) => {
+                                                const existeComic = miComic["Nombre Comic"] == comic["Nombre Comic"]
+                                                if (existeComic) {
+                                                    const comicEliminado = comics.splice(index, 1)
+                                                    return comicEliminado
+                                                }
+                                            })
+                                            comics.forEach(value => {
+                                                const escribirArchivo$ = rxjs.from(funciones.escribirArchivo(JSON.stringify(value), "Marvel"))
+                                                escribirArchivo$.subscribe(respuesta => {
+                                                    console.log(respuesta)
+                                                })
+                                            })
+                                        })
+                                    })
                                 break;
                         }
                     })
