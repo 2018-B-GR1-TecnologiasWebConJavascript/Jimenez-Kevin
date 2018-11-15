@@ -45,6 +45,8 @@ module.exports.buscarComicNombre = [
     {
         name: 'Nombre Comic',
         type: 'input',
-        message: 'Ingresar el nombre del comic a eliminar'
+        message: 'Ingresar el nombre del comic'
     }
 ]
+
+

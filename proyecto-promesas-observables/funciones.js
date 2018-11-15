@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports.escribirArchivo = (comic, nombreArchivo) => {
     return new Promise((resolve, reject) => {
         fs.appendFile(
-            nombreArchivo, comic,
+            nombreArchivo, comic+'-',
             (err) => {
                 if (err) {
                     reject(err);
@@ -37,10 +37,10 @@ module.exports.leerArchivo = (nombreArchivo) => {
     })
 }
 
-module.exports.leerYEscribir = (comic, nombreArchivo) => {        
+module.exports.leerYEscribir = (comic, nombreArchivo) => { 
     return new Promise((resolve, reject) => {
         fs.readFile(nombreArchivo, 'utf-8', (err, misComics) => {
-            if (err) {                
+            if (err) {         
                 fs.writeFile(nombreArchivo, comic, (err) => {                    
                     if (err) {
                         reject({
